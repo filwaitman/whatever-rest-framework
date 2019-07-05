@@ -24,7 +24,7 @@ I would love to be able to create my RESTful APIs in whatever framework/technolo
 
 ## How?
 
-There are a bunch of full working projects as examples. Please see the [tests folder]().  
+There are a bunch of full working projects as examples. Please see the [tests folder](https://github.com/filwaitman/whatever-rest-framework/tree/master/tests).  
 In short: you basically need to define the components you want to use (I suggest doing this in a base API class). For instance, below is all you need to get a simple flask API:
 
 ```python
@@ -101,7 +101,7 @@ Bear in mind that this project is made to be easily extensible, so if you need t
 
 ## Contributing
 
-Please [open issues]() if you see one, or [create a pull request]() when possible.  
+Please [open issues](https://github.com/filwaitman/whatever-rest-framework/issues) if you see one, or [create a pull request](https://github.com/filwaitman/whatever-rest-framework/pulls) when possible.  
 In case of a pull request, please consider the following:
 - Respect the line length is 132 characters
 - Keep the great test coverage of this project
