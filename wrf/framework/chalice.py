@@ -4,7 +4,7 @@ import json
 
 from chalice import Response
 
-from wrf.compat import urlencode, JSONDecodeError
+from wrf.compat import JSONDecodeError, urlencode
 
 from .base import BaseFrameworkComponent
 
