@@ -55,7 +55,7 @@ def _get_response(method, path, *args, **kwargs):
     event = create_event(method, path, *args, **kwargs)
     raw_response = app(event, context=None)
     Response = namedtuple('Response', ['status_code', 'json'])
-    return Response(status_code=raw_response['statusCode'], json=json.loads(raw_response['body']))
+    return Response(status_code=raw_response['statusCode'], json=json.loads(raw_response['body'].decode('utf-8')))
 
 
 def test_list_users():
