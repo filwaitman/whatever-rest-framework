@@ -44,7 +44,6 @@ def create_event(method, uri, data=None, path_parameters=None, query_params=None
             'Content-Type': content_type,
         },
         'pathParameters': path_parameters,
-        'multiValueQueryStringParameters': None,
         'body': data,
         'stageVariables': {},
         'multiValueQueryStringParameters': query_params,
@@ -55,7 +54,7 @@ def _get_response(method, path, *args, **kwargs):
     event = create_event(method, path, *args, **kwargs)
     raw_response = app(event, context=None)
     Response = namedtuple('Response', ['status_code', 'json'])
-    return Response(status_code=raw_response['statusCode'], json=json.loads(raw_response['body'].decode('utf-8')))
+    return Response(status_code=raw_response['statusCode'], json=json.loads(raw_response['body']))
 
 
 def test_list_users():
