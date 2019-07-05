@@ -44,7 +44,6 @@ def create_event(method, uri, data=None, path_parameters=None, query_params=None
             'Content-Type': content_type,
         },
         'pathParameters': path_parameters,
-        'multiValueQueryStringParameters': None,
         'body': data,
         'stageVariables': {},
         'multiValueQueryStringParameters': query_params,

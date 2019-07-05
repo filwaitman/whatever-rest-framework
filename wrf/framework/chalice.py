@@ -4,14 +4,17 @@ import json
 
 from chalice import Response
 
-from wrf.compat import urlencode
+from wrf.compat import JSONDecodeError, urlencode
 
 from .base import BaseFrameworkComponent
 
 
 class ChaliceFrameworkComponent(BaseFrameworkComponent):
     def get_request_data(self):
-        return self.context['request'].json_body or {}
+        try:
+            return json.loads(self.context['request'].raw_body.decode('utf-8'))
+        except JSONDecodeError:
+            return {}
 
     def get_request_query(self):
         return self.context['request'].query_params or {}
