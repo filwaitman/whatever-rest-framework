@@ -5,6 +5,7 @@
 ## DISCLAIMER:
 
 This is WIP. Next steps I can think:
+- Add support to override attributes per endpoint (method)
 - Add support to framework=tornado
 - Add support to framework=Django
 - Add support to ORM=Django
@@ -25,6 +26,8 @@ I would love to be able to create my RESTful APIs in whatever framework/technolo
 
 
 ## How?
+
+`pip install whatever-rest-framework`
 
 There are a bunch of full working projects as examples. Please see the [tests folder](https://github.com/filwaitman/whatever-rest-framework/tree/master/tests).  
 In short: you basically need to define the components you want to use (I suggest doing this in a base API class). For instance, below is all you need to get a simple flask API:
@@ -105,6 +108,6 @@ Bear in mind that this project is made to be easily extensible, so if you need t
 
 Please [open issues](https://github.com/filwaitman/whatever-rest-framework/issues) if you see one, or [create a pull request](https://github.com/filwaitman/whatever-rest-framework/pulls) when possible.  
 In case of a pull request, please consider the following:
-- Respect the line length is 132 characters
+- Respect the line length (132 characters)
 - Keep the great test coverage of this project
 - Run `tox` locally so you can see if everything is green (including linter and other python versions)
