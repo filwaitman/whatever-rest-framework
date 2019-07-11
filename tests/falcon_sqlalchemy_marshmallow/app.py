@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 
 import falcon
@@ -6,6 +7,7 @@ from sqlalchemy import Column, DateTime, Integer, MetaData, String, create_engin
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
 
+logger = logging.getLogger('gunicorn.error')
 engine = create_engine('sqlite://')
 Base = declarative_base(metadata=MetaData(bind=engine))
 session = Session(engine)
@@ -32,10 +34,15 @@ class UserSchema(Schema):
         fields = dump_only + ('first_name', 'last_name')
 
 
+class ResponseLoggerMiddleware(object):
+    def process_response(self, req, resp, resource, req_succeeded):
+        logger.info('{0} {1} {2}'.format(req.method, req.relative_uri, resp.status[:3]))
+
+
 def create_app():
     from tests.falcon_sqlalchemy_marshmallow.api import UserAPI
 
-    api = falcon.API()
+    api = falcon.API(middleware=[ResponseLoggerMiddleware()])
     user_api = UserAPI()
 
     api.add_route('/api/users', user_api, suffix='list')
