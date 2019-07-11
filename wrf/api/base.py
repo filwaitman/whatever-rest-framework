@@ -25,9 +25,10 @@ class BaseAPI(object):
     model_class = None
     schema_class = None
 
-    def __init__(self, request):
+    def __init__(self, request, response=None):
         super(BaseAPI, self).__init__()
         self.request = request
+        self.response = response
         self.current_user = self.get_current_user()  # TODO [later]: lazy evaluation to avoid additional queries?
 
         orm_component = self.ORM_COMPONENT
@@ -41,6 +42,7 @@ class BaseAPI(object):
         self.context = {
             # Request stuff
             'request': self.request,
+            'response': self.response,
             'current_user': self.current_user,
 
             # Components

@@ -1,5 +1,4 @@
 from datetime import datetime
-from functools import partial
 
 from chalice import Chalice
 from marshmallow import Schema, fields, validate
@@ -41,7 +40,7 @@ class User(Model):
 
 
 class MyBaseAPI(BaseAPI):
-    ORM_COMPONENT = partial(PeeweeORMComponent, db=db)
+    ORM_COMPONENT = PeeweeORMComponent
     SCHEMA_COMPONENT = MarshmallowSchemaComponent
     FRAMEWORK_COMPONENT = ChaliceFrameworkComponent
     PAGINATION_COMPONENT = PagePaginationComponent

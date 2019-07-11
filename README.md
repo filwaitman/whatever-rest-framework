@@ -5,13 +5,13 @@
 ## DISCLAIMER:
 
 This is WIP. Next steps I can think:
-- Add support to override attributes per endpoint (method)
-- Add support to framework=falcon
+- Add support to override attributes per endpoint (as a method decorator maybe?)
 - Add support to framework=tornado
 - Add support to framework=Django
 - Add support to ORM=Django
 - Review the TODOs I have left in the project 
 - Create a better documentation (and document the base components)
+- Create unit tests for base components
 - Allow custom headers in responses
 
 
@@ -44,7 +44,7 @@ from wrf.schema.marshmallow_sqlalchemy import MarshmallowSQLAlchemySchemaCompone
 from <your_stuff> import app, db, User, UserSchema
 
 class MyBaseAPI(BaseAPI):
-    ORM_COMPONENT = partial(SQLAlchemyORMComponent, db=db)
+    ORM_COMPONENT = partial(SQLAlchemyORMComponent, session=db.session)
     SCHEMA_COMPONENT = MarshmallowSQLAlchemySchemaComponent
     FRAMEWORK_COMPONENT = FlaskFrameworkComponent
 
@@ -89,6 +89,7 @@ def delete(pk):
 
 ### Framework:
 - Chalice
+- Falcon
 - Flask
 - Pyramid
 

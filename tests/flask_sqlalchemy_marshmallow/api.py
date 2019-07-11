@@ -18,7 +18,7 @@ users_api_bp = Blueprint('users_api', __name__)
 
 
 class MyBaseAPI(BaseAPI):
-    ORM_COMPONENT = partial(SQLAlchemyORMComponent, db=db)
+    ORM_COMPONENT = partial(SQLAlchemyORMComponent, session=db.session)
     SCHEMA_COMPONENT = MarshmallowSQLAlchemySchemaComponent
     FRAMEWORK_COMPONENT = FlaskFrameworkComponent
     PAGINATION_COMPONENT = PagePaginationComponent

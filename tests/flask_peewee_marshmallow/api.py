@@ -10,7 +10,6 @@ from wrf.pagination.base import NoPaginationComponent, PagePaginationComponent
 from wrf.permission.base import AllowAllPermissionComponent, AllowAuthenticatedPermissionComponent, ReadOnlyPermissionComponent
 from wrf.schema.marshmallow import MarshmallowSchemaComponent
 
-from .app import db
 from .models import User
 from .schemas import UserSchema
 
@@ -18,7 +17,7 @@ users_api_bp = Blueprint('users_api', __name__)
 
 
 class MyBaseAPI(BaseAPI):
-    ORM_COMPONENT = partial(PeeweeORMComponent, db=db)
+    ORM_COMPONENT = PeeweeORMComponent
     SCHEMA_COMPONENT = MarshmallowSchemaComponent
     FRAMEWORK_COMPONENT = FlaskFrameworkComponent
     PAGINATION_COMPONENT = PagePaginationComponent
