@@ -8,10 +8,6 @@ from .base import BaseORMComponent
 
 
 class PeeweeORMComponent(BaseORMComponent):
-    def __init__(self, context, db):
-        super(PeeweeORMComponent, self).__init__(context)
-        self.db = db
-
     def get_queryset(self, queryset):
         return queryset
 

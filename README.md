@@ -43,7 +43,7 @@ from wrf.schema.marshmallow_sqlalchemy import MarshmallowSQLAlchemySchemaCompone
 from <your_stuff> import app, db, User, UserSchema
 
 class MyBaseAPI(BaseAPI):
-    ORM_COMPONENT = partial(SQLAlchemyORMComponent, db=db)
+    ORM_COMPONENT = partial(SQLAlchemyORMComponent, session=db.session)
     SCHEMA_COMPONENT = MarshmallowSQLAlchemySchemaComponent
     FRAMEWORK_COMPONENT = FlaskFrameworkComponent
 
@@ -88,6 +88,7 @@ def delete(pk):
 
 ### Framework:
 - Chalice
+- Falcon
 - Flask
 - Pyramid
 

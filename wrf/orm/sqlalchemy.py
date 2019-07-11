@@ -8,9 +8,9 @@ from .base import BaseORMComponent
 
 
 class SQLAlchemyORMComponent(BaseORMComponent):
-    def __init__(self, context, db, commit=True):
+    def __init__(self, context, session, commit=True):
         super(SQLAlchemyORMComponent, self).__init__(context)
-        self.db = db
+        self.session = session
         self.commit = commit
 
     def get_queryset(self, queryset):
@@ -24,22 +24,30 @@ class SQLAlchemyORMComponent(BaseORMComponent):
 
     def _maybe_commit(self):
         if self.commit:
-            self.db.session.commit()
+            self.session.commit()
 
     def create_object(self, data):
         model_class = self.context['model_class']
-        # Marshmallow-SQLAlchemy transforms the schema results into a instance, that's why we have the conditional below
-        instance = data if isinstance(data, model_class) else model_class(**data)
 
-        self.db.session.add(instance)
+        # Marshmallow-SQLAlchemy transforms the schema results into a instance, that's why we have the conditional below
+        instance = data
+        if isinstance(data, dict):
+            instance = model_class(**data)
+
+        self.session.add(instance)
         self._maybe_commit()
         return instance
 
     def update_object(self, instance, data):
-        self.db.session.add(instance)
+        # Marshmallow-SQLAlchemy transforms the schema results into a instance, that's why we have the conditional below
+        if isinstance(data, dict):
+            for key, value in data.items():
+                setattr(instance, key, value)
+
+        self.session.add(instance)
         self._maybe_commit()
         return instance
 
     def delete_object(self, instance):
-        self.db.session.delete(instance)
+        self.session.delete(instance)
         self._maybe_commit()

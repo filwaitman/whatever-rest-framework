@@ -2,7 +2,6 @@ from functools import partial
 
 from pyramid.view import view_config
 
-from tests.pyramid_peewee_marshmallow.app import db
 from tests.pyramid_peewee_marshmallow.models import User
 from tests.pyramid_peewee_marshmallow.schemas import UserSchema
 from wrf.api.base import BaseAPI
@@ -15,7 +14,7 @@ from wrf.schema.marshmallow import MarshmallowSchemaComponent
 
 
 class MyBaseAPI(BaseAPI):
-    ORM_COMPONENT = partial(PeeweeORMComponent, db=db)
+    ORM_COMPONENT = PeeweeORMComponent
     SCHEMA_COMPONENT = MarshmallowSchemaComponent
     FRAMEWORK_COMPONENT = PyramidFrameworkComponent
     PAGINATION_COMPONENT = PagePaginationComponent

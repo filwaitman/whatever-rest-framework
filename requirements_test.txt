@@ -11,10 +11,12 @@ tox==3.12.1
 ipdb==0.12
 
 chalice==1.9.0
+Falcon==2.0.0
 Flask==1.0.3
 Flask-SQLAlchemy==2.4.0
 flask-marshmallow==0.10.1
 flask-shell-ipython==0.4.1
+gunicorn==19.9.0
 marshmallow-sqlalchemy==0.16.4
 peewee==3.9.6
 pyramid==1.10.4
