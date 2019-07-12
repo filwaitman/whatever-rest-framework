@@ -6,7 +6,6 @@
 
 This is WIP. Next steps I can think:
 - Add support to override attributes per endpoint (as a method decorator maybe?)
-- Add support to framework=tornado
 - Add support to framework=Django
 - Add support to ORM=Django
 - Review the TODOs I have left in the project 
