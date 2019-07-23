@@ -5,7 +5,6 @@
 ## DISCLAIMER:
 
 This is WIP. Next steps I can think:
-- Add support to override attributes per endpoint (as a method decorator maybe?)
 - Add support to framework=Django
 - Add support to ORM=Django
 - Review the TODOs I have left in the project 
@@ -43,9 +42,9 @@ from wrf.schema.marshmallow_sqlalchemy import MarshmallowSQLAlchemySchemaCompone
 from <your_stuff> import app, db, User, UserSchema
 
 class MyBaseAPI(BaseAPI):
-    ORM_COMPONENT = partial(SQLAlchemyORMComponent, session=db.session)
-    SCHEMA_COMPONENT = MarshmallowSQLAlchemySchemaComponent
-    FRAMEWORK_COMPONENT = FlaskFrameworkComponent
+    orm_component_class = partial(SQLAlchemyORMComponent, session=db.session)
+    schema_component_class = MarshmallowSQLAlchemySchemaComponent
+    framework_component_class = FlaskFrameworkComponent
 
     def get_current_user(self):
         return {'name': 'Filipe'}
@@ -59,28 +58,23 @@ class UserAPI(MyBaseAPI):
 
 @app.route('/', methods=['GET'])
 def list_():
-    api = UserAPI(request)
-    return api.dispatch_request(api.list_)
+    return UserAPI(request).list()
 
 @app.route('/', methods=['POST'])
 def create():
-    api = UserAPI(request)
-    return api.dispatch_request(api.create)
+    return UserAPI(request).create()
 
 @app.route('/<int:pk>/', methods=['GET'])
 def retrieve(pk):
-    api = UserAPI(request)
-    return api.dispatch_request(api.retrieve, pk)
+    return UserAPI(request).retrieve(pk)
 
 @app.route('/<int:pk>/', methods=['PATCH'])
 def update(pk):
-    api = UserAPI(request)
-    return api.dispatch_request(api.update, pk)
+    return UserAPI(request).update(pk)
 
 @app.route('/<int:pk>/', methods=['DELETE'])
 def delete(pk):
-    api = UserAPI(request)
-    return api.dispatch_request(api.delete, pk)
+    return UserAPI(request).delete(pk)
 ```
 
 
