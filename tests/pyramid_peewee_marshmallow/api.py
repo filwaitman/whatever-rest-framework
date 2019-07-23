@@ -4,7 +4,7 @@ from pyramid.view import view_config
 
 from tests.pyramid_peewee_marshmallow.models import User
 from tests.pyramid_peewee_marshmallow.schemas import UserSchema
-from wrf.api.base import BaseAPI
+from wrf.api.base import BaseAPI, api_view
 from wrf.base import APIError
 from wrf.framework.pyramid import PyramidFrameworkComponent
 from wrf.orm.peewee import PeeweeORMComponent
@@ -14,11 +14,11 @@ from wrf.schema.marshmallow import MarshmallowSchemaComponent
 
 
 class MyBaseAPI(BaseAPI):
-    ORM_COMPONENT = PeeweeORMComponent
-    SCHEMA_COMPONENT = MarshmallowSchemaComponent
-    FRAMEWORK_COMPONENT = PyramidFrameworkComponent
-    PAGINATION_COMPONENT = PagePaginationComponent
-    PERMISSION_COMPONENT = AllowAuthenticatedPermissionComponent
+    orm_component_class = PeeweeORMComponent
+    schema_component_class = MarshmallowSchemaComponent
+    framework_component_class = PyramidFrameworkComponent
+    pagination_component_class = PagePaginationComponent
+    permission_component_class = AllowAuthenticatedPermissionComponent
 
     def get_current_user(self):
         return {'name': 'Filipe'}
@@ -31,102 +31,106 @@ class UserAPI(MyBaseAPI):
     def get_queryset(self):
         return User.select()
 
-    def doublename(self, pk):
+    def _doublename(self, pk):
         instance = self.orm_component.get_object(self.get_queryset(), pk)
         self.check_permissions(instance)
         return self.framework_component.create_response({'doubled': instance.first_name * 2}, 200)
 
+    @api_view()
+    def doublename(self, pk):
+        return self._doublename(pk)
+
+    @api_view()
     def handled_exception(self):
         raise APIError(499, {'detail': 'Now this is a weird HTTP code'})
 
+    @api_view()
     def unhandled_exception(self):
         return 1 / 0
 
+    @api_view(permission_component_class=AllowAllPermissionComponent)
+    def doublename_open(self, pk):
+        return self._doublename(pk)
 
-class UserOpenAPI(UserAPI):
-    PERMISSION_COMPONENT = AllowAllPermissionComponent
+    @api_view(permission_component_class=ReadOnlyPermissionComponent)
+    def list_readonly(self):
+        return self._list()
 
+    @api_view(permission_component_class=ReadOnlyPermissionComponent)
+    def create_readonly(self):
+        return self._create()
 
-class UserReadOnlyAPI(UserAPI):
-    PERMISSION_COMPONENT = ReadOnlyPermissionComponent
+    @api_view(framework_component_class=partial(PyramidFrameworkComponent, receive_data_as_json=False))
+    def create_formdata(self):
+        return self._create()
 
+    @api_view(pagination_component_class=NoPaginationComponent)
+    def list_nopagination(self):
+        return self._list()
 
-class UserFormDataAPI(UserAPI):
-    FRAMEWORK_COMPONENT = partial(PyramidFrameworkComponent, receive_data_as_json=False)
-
-
-class UserNoPaginationAPI(UserAPI):
-    PAGINATION_COMPONENT = NoPaginationComponent
+    def get_pagination_component_class(self, api_method_name):
+        if self.request.params.get('paginate') == 'f':
+            return NoPaginationComponent
+        return super(UserAPI, self).get_pagination_component_class(api_method_name)
 
 
 @view_config(route_name='users_list', renderer='json')
-def list_(request):
-    api = UserAPI(request)
-    return api.dispatch_request(api.list_)
+def list(request):
+    return UserAPI(request).list()
 
 
 @view_config(route_name='users_create', renderer='json')
 def create(request):
-    api = UserAPI(request)
-    return api.dispatch_request(api.create)
+    return UserAPI(request).create()
 
 
 @view_config(route_name='users_retrieve', renderer='json')
 def retrieve(request):
-    api = UserAPI(request)
-    return api.dispatch_request(api.retrieve, request.matchdict['pk'])
+    return UserAPI(request).retrieve(request.matchdict['pk'])
 
 
 @view_config(route_name='users_update', renderer='json')
 def update(request):
-    api = UserAPI(request)
-    return api.dispatch_request(api.update, request.matchdict['pk'])
+    return UserAPI(request).update(request.matchdict['pk'])
 
 
 @view_config(route_name='users_delete', renderer='json')
 def delete(request):
-    api = UserAPI(request)
-    return api.dispatch_request(api.delete, request.matchdict['pk'])
+    return UserAPI(request).delete(request.matchdict['pk'])
 
 
 @view_config(route_name='users_doublename', renderer='json')
 def doublename(request):
-    api = UserAPI(request)
-    return api.dispatch_request(api.doublename, request.matchdict['pk'])
+    return UserAPI(request).doublename(request.matchdict['pk'])
 
 
 @view_config(route_name='users_open_doublename', renderer='json')
 def open_doublename(request):
-    api = UserOpenAPI(request)
-    return api.dispatch_request(api.doublename, request.matchdict['pk'])
+    return UserAPI(request).doublename_open(request.matchdict['pk'])
 
 
 @view_config(route_name='users_read_only_list_and_create', renderer='json')
 def read_only_list_and_create(request):
-    api = UserReadOnlyAPI(request)
-    method = api.list_ if request.method == 'GET' else api.create
-    return api.dispatch_request(method)
+    if request.method == 'GET':
+        return UserAPI(request).list_readonly()
+    return UserAPI(request).create_readonly()
 
 
 @view_config(route_name='users_form_data_create', renderer='json')
 def form_data_create(request):
-    api = UserFormDataAPI(request)
-    return api.dispatch_request(api.create)
+    return UserAPI(request).create_formdata()
 
 
 @view_config(route_name='users_no_pagination_list', renderer='json')
 def no_pagination_list(request):
-    api = UserNoPaginationAPI(request)
-    return api.dispatch_request(api.list_)
+    return UserAPI(request).list_nopagination()
 
 
 @view_config(route_name='users_handled_exception_list', renderer='json')
 def handled_exception_list(request):
-    api = UserAPI(request)
-    return api.dispatch_request(api.handled_exception)
+    return UserAPI(request).handled_exception()
 
 
 @view_config(route_name='users_unhandled_exception_list', renderer='json')
 def unhandled_exception_list(request):
-    api = UserAPI(request)
-    return api.dispatch_request(api.unhandled_exception)
+    return UserAPI(request).unhandled_exception()

@@ -245,6 +245,20 @@ def test_no_pagination_list():
     assert response.json[0]['last_name'] == 'Waitman'
 
 
+def test_no_pagination_list_via_query_params():
+    _create_user(first_name='Filipe', last_name='Waitman')
+
+    response = _get_response('GET', '/api/users', query_params={'paginate': 'f'})
+    assert response.status_code == 200
+    assert len(response.json) == 1
+    assert 'next_page' not in response.json
+    assert 'prev_page' not in response.json
+    assert 'id' in response.json[0]
+    assert 'created' in response.json[0]
+    assert response.json[0]['first_name'] == 'Filipe'
+    assert response.json[0]['last_name'] == 'Waitman'
+
+
 def test_exception_behavior():
     response = _get_response('GET', '/api/users/exception/handled')
     assert response.status_code == 499

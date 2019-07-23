@@ -219,6 +219,19 @@ class PyramidPeeweeMarshmallowTestCase(unittest.TestCase):
         assert response.json_body[0]['first_name'] == 'Filipe'
         assert response.json_body[0]['last_name'] == 'Waitman'
 
+    def test_no_pagination_list_via_query_params(self):
+        _create_user(first_name='Filipe', last_name='Waitman')
+
+        response = self.client.get('/api/users/?paginate=f')
+        assert response.status_code == 200
+        assert len(response.json_body) == 1
+        assert 'next_page' not in response.json_body
+        assert 'prev_page' not in response.json_body
+        assert 'id' in response.json_body[0]
+        assert 'created' in response.json_body[0]
+        assert response.json_body[0]['first_name'] == 'Filipe'
+        assert response.json_body[0]['last_name'] == 'Waitman'
+
     def test_exception_behavior(self):
         response = self.client.get('/api/users/exception/handled/', status=499)
         assert response.status_code == 499
