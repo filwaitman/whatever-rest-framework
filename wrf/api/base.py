@@ -24,22 +24,32 @@ def api_view(**overrides):
     return wrap
 
 
+class Require(object):
+    error_msg = 'Improperly configured: missing component "{}" configuration. Please set it in your base API class.'
+
+    def __init__(self, name):
+        self.name = name
+
+    def __call__(self, *args, **kwargs):
+        raise NotImplementedError(self.error_msg.format(self.name))
+
+
 class BaseAPI(object):
     '''
     This is the orchestrator. All your APIs shall derive from it.
     Components are usually set as a base for all APIs you're going to create. Still, you can override them to specific API needs.
     '''
     # Required
-    orm_component_class = None
-    schema_component_class = None
-    framework_component_class = None
+    orm_component_class = Require('orm_component_class')
+    schema_component_class = Require('schema_component_class')
+    framework_component_class = Require('framework_component_class')
 
     # Optional (as they have a default set)
     error_component_class = DefaultErrorComponent
     pagination_component_class = NoPaginationComponent
     permission_component_class = AllowAllPermissionComponent
 
-    # Specific to each API
+    # Required, usually specific to each API
     model_class = None
     schema_class = None
 
