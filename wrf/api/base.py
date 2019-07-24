@@ -8,6 +8,16 @@ from wrf.pagination.base import NoPaginationComponent
 from wrf.permission.base import AllowAllPermissionComponent
 
 
+class _Require(object):
+    error_msg = 'Improperly configured: missing component "{}" configuration. Please set it in your base API class.'
+
+    def __init__(self, name):
+        self.name = name
+
+    def __call__(self, *args, **kwargs):
+        raise NotImplementedError(self.error_msg.format(self.name))
+
+
 def api_view(**overrides):
     def wrap(f):
         @wraps(f)
@@ -30,16 +40,16 @@ class BaseAPI(object):
     Components are usually set as a base for all APIs you're going to create. Still, you can override them to specific API needs.
     '''
     # Required
-    orm_component_class = None
-    schema_component_class = None
-    framework_component_class = None
+    orm_component_class = _Require('orm_component_class')
+    schema_component_class = _Require('schema_component_class')
+    framework_component_class = _Require('framework_component_class')
 
     # Optional (as they have a default set)
     error_component_class = DefaultErrorComponent
     pagination_component_class = NoPaginationComponent
     permission_component_class = AllowAllPermissionComponent
 
-    # Specific to each API
+    # Required, usually specific to each API
     model_class = None
     schema_class = None
 
