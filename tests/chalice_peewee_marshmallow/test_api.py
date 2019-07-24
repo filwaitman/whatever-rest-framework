@@ -53,8 +53,8 @@ def create_event(method, uri, data=None, path_parameters=None, query_params=None
 def _get_response(method, path, *args, **kwargs):
     event = create_event(method, path, *args, **kwargs)
     raw_response = app(event, context=None)
-    Response = namedtuple('Response', ['status_code', 'json'])
-    return Response(status_code=raw_response['statusCode'], json=json.loads(raw_response['body']))
+    Response = namedtuple('Response', ['status_code', 'json', 'headers'])
+    return Response(status_code=raw_response['statusCode'], json=json.loads(raw_response['body']), headers=raw_response['headers'])
 
 
 def test_list_users():
@@ -162,6 +162,7 @@ def test_doublename():
     response = _get_response('GET', '/api/users/{pk}/doublename', path_parameters={'pk': user.id})
     assert response.status_code == 200
     assert response.json == {'doubled': 'FilipeFilipe'}
+    assert response.headers['header-passed-in'] == '1'
 
 
 def test_pagination():

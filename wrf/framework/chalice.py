@@ -30,5 +30,6 @@ class ChaliceFrameworkComponent(BaseFrameworkComponent):
             url += '?{}'.format(query_params)
         return url
 
-    def create_response(self, data, status_code):
-        return Response(body=json.dumps(data), status_code=status_code)
+    def create_response(self, data, status_code, headers=None):
+        headers = headers or {}
+        return Response(body=json.dumps(data), status_code=status_code, headers=headers)

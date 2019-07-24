@@ -37,7 +37,8 @@ class UserAPI(MyBaseAPI):
     def _doublename(self, pk):
         instance = self.orm_component.get_object(self.get_queryset(), pk)
         self.check_permissions(instance)
-        return self.framework_component.create_response({'doubled': instance.first_name * 2}, 200)
+        data = {'doubled': instance.first_name * 2}
+        return self.framework_component.create_response(data, 200, headers={'header-passed-in': '1'})
 
     @api_view()
     def doublename(self, pk):
