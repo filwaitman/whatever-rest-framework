@@ -16,5 +16,5 @@ class BaseFrameworkComponent(BaseComponent):
     def get_request_url(self):
         raise NotImplementedError()  # pragma: no cover
 
-    def create_response(self, data, status_code):
+    def create_response(self, data, status_code, headers=None):
         raise NotImplementedError()  # pragma: no cover

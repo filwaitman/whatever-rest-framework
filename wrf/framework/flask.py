@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from flask import jsonify
+from flask import jsonify, make_response
 
 from .base import BaseFrameworkComponent
 
@@ -24,5 +24,9 @@ class FlaskFrameworkComponent(BaseFrameworkComponent):
     def get_request_url(self):
         return self.context['request'].url
 
-    def create_response(self, data, status_code):
-        return jsonify(data), status_code
+    def create_response(self, data, status_code, headers=None):
+        headers = headers or {}
+        response = make_response(jsonify(data), status_code)
+        for key, value in headers.items():
+            response.headers[key] = value
+        return response

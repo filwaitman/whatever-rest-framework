@@ -127,6 +127,7 @@ class PyramidPeeweeMarshmallowTestCase(unittest.TestCase):
         response = self.client.get('/api/users/{}/doublename/'.format(user.id))
         assert response.status_code == 200
         assert response.json_body == {'doubled': 'FilipeFilipe'}
+        assert response.headers['header-passed-in'] == '1'
 
     def test_pagination(self):
         _create_user(first_name='Filipe', last_name='Waitman')

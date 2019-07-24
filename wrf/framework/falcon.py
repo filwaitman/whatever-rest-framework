@@ -31,6 +31,9 @@ class FalconFrameworkComponent(BaseFrameworkComponent):
 
         return url
 
-    def create_response(self, data, status_code):
+    def create_response(self, data, status_code, headers=None):
+        headers = headers or {}
+        for key, value in headers.items():
+            self.context['response'].append_header(key, value)
         self.context['response'].media = data
         self.context['response'].status = self._get_status_code_as_falcon_attribute(status_code)

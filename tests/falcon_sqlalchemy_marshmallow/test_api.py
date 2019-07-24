@@ -131,6 +131,7 @@ def test_doublename(client):
     response = client.simulate_get('/api/users/{}/doublename'.format(user.id))
     assert response.status_code == 200
     assert response.json == {'doubled': 'FilipeFilipe'}
+    assert response.headers['header-passed-in'] == '1'
 
 
 def test_pagination(client):

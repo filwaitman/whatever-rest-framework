@@ -31,7 +31,9 @@ class PyramidFrameworkComponent(BaseFrameworkComponent):
     def get_request_url(self):
         return '{}{}'.format(self.context['request'].host_url, self.context['request'].path_qs)
 
-    def create_response(self, data, status_code):
+    def create_response(self, data, status_code, headers=None):
+        headers = headers or {}
+        self.context['request'].response.headers.update(headers)
         if status_code == 204:
             raise HTTPNoContent()  # See https://github.com/Pylons/pyramid/issues/709
         self.context['request'].response.status = status_code

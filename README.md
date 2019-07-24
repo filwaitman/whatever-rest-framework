@@ -10,7 +10,6 @@ This is WIP. Next steps I can think:
 - Review the TODOs I have left in the project 
 - Create a better documentation (and document the base components)
 - Create unit tests for base components
-- Allow custom headers in responses
 
 
 ## What?
