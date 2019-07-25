@@ -8,7 +8,6 @@ This is WIP. Next steps I can think:
 - Add support to framework=Django
 - Add support to ORM=Django
 - Review the TODOs I have left in the project 
-- Create a better documentation (and document the base components)
 - Create unit tests for base components
 
 
@@ -28,32 +27,81 @@ I would love to be able to create my RESTful APIs in whatever framework/technolo
 `pip install whatever-rest-framework`
 
 There are a bunch of full working projects as examples. Please see the [tests folder](https://github.com/filwaitman/whatever-rest-framework/tree/master/tests).  
-In short: you basically need to define the components you want to use (I suggest doing this in a base API class). For instance, below is all you need to get a simple flask API:
+
+In details, you'll need to:  
+
+### 1) Create a `APIOrchestrator` by choosing a bunch of components (meaning: interfaces) and connecting them altogether
+
+The types of base components you can choose for the API orchestrator are:
+
+| Type                       | Implementations                                                                                          | Must be set? | Default                     |
+|----------------------------|----------------------------------------------------------------------------------------------------------|--------------|-----------------------------|
+| orm_component_class        | ChaliceFrameworkComponent, FalconFrameworkComponent, FlaskFrameworkComponent, PyramidFrameworkComponent  | Yes          | None                        |
+| schema_component_class     | PeeweeORMComponent, SQLAlchemyORMComponent                                                               | Yes          | None                        |
+| framework_component_class  | MarshmallowSchemaComponent, MarshmallowSQLAlchemySchemaComponent                                         | Yes          | None                        |
+| error_component_class      | DefaultErrorComponent                                                                                    | No           | DefaultErrorComponent       |
+| pagination_component_class | NoPagePaginationComponent, PagePagePaginationComponent                                                   | No           | NoPagePaginationComponent   |
+| permission_component_class | AllowAllPermissionComponent, AllowAuthenticatedPermissionComponent, ReadOnlyPermissionComponent          | No           | AllowAllPermissionComponent |
+
+### 2) Define the `get_current_user(self)` method inside this orchestrator
+
+The logic to discover the current user of a request is heavily dependant of the framework (and the tools you use), and I decided not to include it in the scope of this project.
+Ideally this can be simple as `def get_current_user(self): return g.user` or even `def get_current_user(self): return self.request.user`.
+
+### 3) Create your APIs inheriting from the `APIOrchestrator`
+
+These APIs need to set the attributes `model_class` and `schema_class`. Also you have to set the `get_queryset(self)`method.
+Here you have full, magic access to the basic API CRUD methods (list resources, retrieve resource, create resource, update resource, delete resource).  
+
+**Special note: the `@api_view()` decorator:**
+
+You can add other specific methods to your needs by adding methods to the API class too! Just decorate your custom methods with the `@api_view()` decorator and you're good to go!
+This decorator can receive as arguments the components override to be used for that particular method. So you can have, for instance, your APIOrchestrator with permission=`AllowAllPermissionComponent` but this particular method with permission=`AllowAuthenticatedPermissionComponent` just by like below:
+
+```python
+class APIOrchestrator(BaseAPI):
+    permission_component_class = AllowAllPermissionComponent
+    # ...
+
+    @api_view(permission_component_class=AllowAuthenticatedPermissionComponent)
+    def retrieve_more_private_stuff(self):
+        return {'super-private': 'data'}
+```
+
+### Working example for a flask application:
 
 ```python
 from functools import partial
 
-from wrf.api.base import BaseAPI
+from wrf.api.base import BaseAPI, api_view
 from wrf.framework.flask import FlaskFrameworkComponent
 from wrf.orm.sqlalchemy import SQLAlchemyORMComponent
 from wrf.schema.marshmallow_sqlalchemy import MarshmallowSQLAlchemySchemaComponent
 
 from <your_stuff> import app, db, User, UserSchema
 
-class MyBaseAPI(BaseAPI):
+class APIOrchestrator(BaseAPI):
     orm_component_class = partial(SQLAlchemyORMComponent, session=db.session)
     schema_component_class = MarshmallowSQLAlchemySchemaComponent
     framework_component_class = FlaskFrameworkComponent
 
     def get_current_user(self):
+        # from flask_login import current_user; return current_user # if you're using flask-login, for example
+        # return self.request.user  # if you're using django, for example
         return {'name': 'Filipe'}
 
-class UserAPI(MyBaseAPI):
+class UserAPI(APIOrchestrator):
     model_class = User
     schema_class = UserSchema
 
     def get_queryset(self):
         return User.query
+    
+    @api_view()
+    def retrieve_something_else(self, pk):
+        user = User.query.filter_by(id=pk).one()
+        return {'something_else': user.something_else}
+
 
 @app.route('/', methods=['GET'])
 def list_():
@@ -74,6 +122,10 @@ def update(pk):
 @app.route('/<int:pk>/', methods=['DELETE'])
 def delete(pk):
     return UserAPI(request).delete(pk)
+
+@app.route('/<int:pk>/something_else/', methods=['GET'])
+def retrieve_something_else(pk):
+    return UserAPI(request).retrieve_something_else(pk)
 ```
 
 
@@ -95,7 +147,7 @@ def delete(pk):
 - Marshmallow
 - Marshmallow-SQLAlchemy
 
-Bear in mind that this project is made to be easily extensible, so if you need to connect something else, it's simple to do it.
+Bear in mind that this project is made to be easily extensible, so if you need to connect something else, it's simple to do it. [Check how simple it is to add support to a new framework](https://github.com/filwaitman/whatever-rest-framework/tree/master/wrf/framework/flask.py), for example. =D
 
 
 ## Contributing
