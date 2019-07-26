@@ -31,7 +31,7 @@ There are a bunch of full working projects as examples. Please see the [tests fo
 
 In details, you'll need to:  
 
-### 1) Create a `APIOrchestrator` by choosing a bunch of components (meaning: interfaces) and connecting them altogether
+### 1) Create an `APIOrchestrator` by choosing a bunch of components
 
 The types of base components you can choose for the API orchestrator are:
 
@@ -102,7 +102,6 @@ class UserAPI(APIOrchestrator):
     def retrieve_something_else(self, pk):
         user = User.query.filter_by(id=pk).one()
         return {'something_else': user.something_else}
-
 
 @app.route('/', methods=['GET'])
 def list_():
