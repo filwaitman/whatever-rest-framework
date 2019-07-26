@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/filwaitman/whatever-rest-framework.svg?branch=master)](https://travis-ci.org/filwaitman/whatever-rest-framework)
+[![codecov](https://codecov.io/gh/filwaitman/whatever-rest-framework/branch/master/graph/badge.svg)](https://codecov.io/gh/filwaitman/whatever-rest-framework)
 
 # Whatever REST Framework
 
