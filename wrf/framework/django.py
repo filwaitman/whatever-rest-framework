@@ -18,7 +18,7 @@ class DjangoFrameworkComponent(BaseFrameworkComponent):
         if not self.receive_data_as_json:
             return dict(self.context['request'].POST.items())
         try:
-            return json.loads(self.context['request'].body)
+            return json.loads(self.context['request'].body.decode('utf-8'))
         except JSONDecodeError:
             return {}
 
