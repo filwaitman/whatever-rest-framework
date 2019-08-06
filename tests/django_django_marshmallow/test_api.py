@@ -8,8 +8,11 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_django_marshmallow.setti
 django.setup()
 
 from django.contrib.auth.models import User as DjangoUser  # noqa  # isort:skip
+from django.core.management import call_command  # noqa  # isort:skip
 from django.test import TestCase  # noqa  # isort:skip
 from main.models import User  # noqa  # isort:skip
+
+call_command('migrate')
 
 
 def _create_user(**data):
