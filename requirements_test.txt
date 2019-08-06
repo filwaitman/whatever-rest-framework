@@ -12,6 +12,8 @@ tox==3.12.1
 ipdb==0.12
 
 chalice==1.9.0
+Django==2.2.3 ; python_version >= '3.0'
+Django==1.11.23 ; python_version < '3.0'
 Falcon==2.0.0
 Flask==1.0.3
 Flask-SQLAlchemy==2.4.0

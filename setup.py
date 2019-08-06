@@ -1,8 +1,23 @@
+import sys
+
 from setuptools import find_packages, setup
 
 from wrf import VERSION
 
 BASE_CVS_URL = 'https://github.com/filwaitman/whatever-rest-framework'
+
+
+def get_tests_require():
+    django_1x_version = 'Django==1.11.23'
+    django_2x_version = 'Django==2.2.3'
+    lines = [x.strip().split(' ;')[0] for x in open('requirements_test.txt').readlines() if x]
+
+    if sys.version_info.major < 3:
+        lines.remove(django_2x_version)
+    else:
+        lines.remove(django_1x_version)
+
+    return lines
 
 
 setup(
@@ -25,7 +40,7 @@ setup(
     install_requires=[x.strip() for x in open('requirements.txt').readlines()],
 
     test_suite='tests',
-    tests_require=[x.strip() for x in open('requirements_test.txt').readlines()],
+    tests_require=get_tests_require(),
 
     keywords=[],
     classifiers=[

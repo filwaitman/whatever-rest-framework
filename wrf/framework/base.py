@@ -5,6 +5,7 @@ from wrf.base import BaseComponent
 
 class BaseFrameworkComponent(BaseComponent):
     def get_request_data(self):
+        # TODO: add support to FILES data
         raise NotImplementedError()  # pragma: no cover
 
     def get_request_query(self):
