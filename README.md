@@ -34,19 +34,19 @@ In details, you'll need to:
 
 The types of base components you can choose for the API orchestrator are:
 
-| Type                       | Implementations                                                                                          | Must be set? | Default                     |
-|----------------------------|----------------------------------------------------------------------------------------------------------|--------------|-----------------------------|
-| orm_component_class        | ChaliceFrameworkComponent, FalconFrameworkComponent, FlaskFrameworkComponent, PyramidFrameworkComponent  | Yes          | None                        |
-| schema_component_class     | PeeweeORMComponent, SQLAlchemyORMComponent                                                               | Yes          | None                        |
-| framework_component_class  | MarshmallowSchemaComponent, MarshmallowSQLAlchemySchemaComponent                                         | Yes          | None                        |
-| error_component_class      | DefaultErrorComponent                                                                                    | No           | DefaultErrorComponent       |
-| pagination_component_class | NoPagePaginationComponent, PagePagePaginationComponent                                                   | No           | NoPagePaginationComponent   |
-| permission_component_class | AllowAllPermissionComponent, AllowAuthenticatedPermissionComponent, ReadOnlyPermissionComponent          | No           | AllowAllPermissionComponent |
+| Type                       | Implementations                                                                                                                    | Must be set? | Default                     |
+|----------------------------|------------------------------------------------------------------------------------------------------------------------------------|--------------|-----------------------------|
+| framework_component_class  | ChaliceFrameworkComponent, DjangoFrameworkComponent, FalconFrameworkComponent, FlaskFrameworkComponent, PyramidFrameworkComponent  | Yes          | None                        |
+| orm_component_class        | DjangoORMComponent, PeeweeORMComponent, SQLAlchemyORMComponent                                                                     | Yes          | None                        |
+| schema_component_class     | MarshmallowSchemaComponent, MarshmallowSQLAlchemySchemaComponent                                                                   | Yes          | None                        |
+| error_component_class      | DefaultErrorComponent                                                                                                              | No           | DefaultErrorComponent       |
+| pagination_component_class | NoPagePaginationComponent, PagePagePaginationComponent                                                                             | No           | NoPagePaginationComponent   |
+| permission_component_class | AllowAllPermissionComponent, AllowAuthenticatedPermissionComponent, ReadOnlyPermissionComponent                                    | No           | AllowAllPermissionComponent |
 
 ### 2) Define the `get_current_user(self)` method inside this orchestrator
 
 The logic to discover the current user of a request is heavily dependant of the framework (and the tools you use), and I decided not to include it in the scope of this project.
-Ideally this can be simple as `def get_current_user(self): return g.user` or even `def get_current_user(self): return self.request.user`.
+Ideally this can be simple as `def get_current_user(self): return g.user` or even `def get_current_user(self): return self.request.user if self.request.user.is_authenticated else None`.
 
 ### 3) Create your APIs inheriting from the `APIOrchestrator`
 
@@ -87,7 +87,7 @@ class APIOrchestrator(BaseAPI):
 
     def get_current_user(self):
         # from flask_login import current_user; return current_user # if you're using flask-login, for example
-        # return self.request.user  # if you're using django, for example
+        # return self.request.user if self.request.user.is_authenticated else None  # if you're using django, for example
         return {'name': 'Filipe'}
 
 class UserAPI(APIOrchestrator):
@@ -132,12 +132,14 @@ def retrieve_something_else(pk):
 
 ### Framework:
 - Chalice
+- Django
 - Falcon
 - Flask
 - Pyramid
 
 
 ### ORM:
+- Django
 - Peewee
 - SQLAlchemy
 

@@ -22,9 +22,8 @@ class MyBaseAPI(BaseAPI):
     permission_component_class = AllowAuthenticatedPermissionComponent
 
     def get_current_user(self):
-        user = self.request.user
-        if user.is_authenticated:  # `bool(request.user)` is `True` for unauthenticated users. Shame on django.
-            return user
+        # `bool(request.user)` is `True` for unauthenticated users. Shame on django.
+        return self.request.user if self.request.user.is_authenticated else None
 
 
 class UserAPI(MyBaseAPI):
